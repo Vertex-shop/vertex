@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertex Studio · Robux & Cuentas</title>
+<style>
+  :root{
+    --bg: #0b0f0d;
+    --bg-soft: #111613;
+    --panel: #161d19;
+    --line: #243029;
+    --lime: #c8ff4d;
+    --gold: #ffd166;
+    --text: #eef2ee;
+    --text-dim: #9bab9f;
+    --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+    --display: 'Space Grotesk', Arial, sans-serif;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--display);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky; top:0; z-index: 50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 6%;
+    background: rgba(11,15,13,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo{
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .logo .dot{
+    width:10px; height:10px; border-radius:2px;
+    background: var(--lime);
+    box-shadow: 0 0 12px var(--lime);
+  }
+  nav{ display:flex; gap: 28px; font-size: 0.92rem; color: var(--text-dim); }
+  nav a:hover{ color: var(--lime); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 90px 6% 60px;
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 50px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(200,255,77,0.08), transparent 40%),
+      repeating-linear-gradient(90deg, transparent, transparent 79px, var(--line) 80px);
+    opacity:0.5;
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: var(--lime);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:"●"; font-size: 0.6rem; animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse{ 50%{ opacity:0.25; } }
+
+  h1{
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  h1 span{ color: var(--lime); }
+
+  .hero p.sub{
+    margin-top: 18px;
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    max-width: 480px;
+  }
+  .hero-ctas{ display:flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+
+  .btn{
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    padding: 14px 26px;
+    border-radius: 6px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display:inline-flex; align-items:center; gap:8px;
+    border: 1px solid transparent;
+  }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn-primary{ background: var(--lime); color: #0b0f0d; box-shadow: 0 0 0 0 transparent; }
+  .btn-primary:hover{ box-shadow: 0 6px 24px rgba(200,255,77,0.25); }
+  .btn-outline{ border-color: var(--line); color: var(--text); }
+  .btn-outline:hover{ border-color: var(--lime); color: var(--lime); }
+
+  /* ---------- TICKER ---------- */
+  .ticker-wrap{
+    background: var(--bg-soft);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px 0;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .ticker{
+    display:inline-block;
+    animation: scroll 28s linear infinite;
+  }
+  .ticker span{ margin: 0 28px; }
+  .ticker .up{ color: var(--lime); }
+  @keyframes scroll{
+    from{ transform: translateX(0); }
+    to{ transform: translateX(-50%); }
+  }
+
+  /* ---------- CALCULADORA (signature) ---------- */
+  .calc{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    position: relative;
+    z-index: 2;
+  }
+  .calc-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom: 24px;
+  }
+  .calc-head h3{ font-size: 1.05rem; letter-spacing: 0.04em; }
+  .calc-head .badge{
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--lime);
+    border: 1px solid var(--lime);
+    padding: 4px 10px;
+    border-radius: 99px;
+    letter-spacing: 0.08em;
+  }
+
+  .calc-display{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    font-family: var(--mono);
+    margin-bottom: 22px;
+  }
+  .calc-display .robux-amount{
+    font-size: 2.4rem; font-weight: 700;
+  }
+  .calc-display .robux-amount span{ font-size: 1rem; color: var(--text-dim); font-weight:400; }
+  .calc-display .price-amount{
+    font-size: 2.4rem; font-weight: 700; color: var(--gold);
+    text-align: right;
+  }
+  .calc-display .price-amount span{ font-size: 1rem; color: var(--text-dim); font-weight:400; }
+
+  input[type="range"]{
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--line);
+    border-radius: 99px;
+    outline: none;
+    margin: 6px 0 8px;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--lime);
+    border: 4px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--lime);
+    border: 4px solid var(--bg);
+    cursor: pointer;
+  }
+
+  .calc-scale{
+    display:flex; justify-content:space-between;
+    font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
+    margin-bottom: 18px;
+  }
+
+  .calc-note{
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    border-top: 1px dashed var(--line);
+    padding-top: 14px;
+    margin-bottom: 22px;
+    min-height: 1.4em;
+  }
+  .calc-note .on{ color: var(--gold); }
+
+  .calc .btn{ width: 100%; justify-content: center; }
+
+  /* ---------- SECTIONS ---------- */
+  section{ padding: 80px 6%; border-bottom: 1px solid var(--line); }
+  .section-head{ margin-bottom: 48px; max-width: 600px; }
+  .section-head .eyebrow{ margin-bottom: 12px; }
+  .section-head h2{ font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 700; }
+  .section-head p{ color: var(--text-dim); margin-top: 12px; }
+
+  /* PRICING TABLE */
+  .price-table{
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .price-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    align-items:center;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--line);
+    gap: 20px;
+  }
+  .price-row:last-child{ border-bottom: none; }
+  .price-row.head{
+    background: var(--bg-soft);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .price-row .qty{ font-weight: 700; font-size: 1.1rem; }
+  .price-row .qty small{ color: var(--text-dim); font-weight:400; font-size: 0.8rem; }
+  .price-row .rate{ font-family: var(--mono); color: var(--text-dim); }
+  .price-row .total{ font-family: var(--mono); font-size: 1.2rem; color: var(--gold); font-weight:700; }
+  .price-row .tag{
+    font-family: var(--mono); font-size: 0.7rem;
+    padding: 4px 10px; border-radius: 99px;
+    border: 1px solid var(--line); color: var(--text-dim);
+    width: fit-content;
+  }
+  .price-row .tag.best{ border-color: var(--lime); color: var(--lime); }
+
+  /* PRODUCTS GRID */
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 26px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover{ border-color: var(--lime); transform: translateY(-3px); }
+  .card .icon{ font-size: 1.8rem; margin-bottom: 14px; display:block; }
+  .card h4{ font-size: 1.05rem; margin-bottom: 8px; }
+  .card p{ color: var(--text-dim); font-size: 0.9rem; }
+  .card .price{
+    font-family: var(--mono); color: var(--gold);
+    margin-top: 14px; font-size: 0.95rem; font-weight: 600;
+  }
+
+  /* CTA BAND */
+  .cta-band{
+    text-align:center;
+    padding: 90px 6%;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(200,255,77,0.07), transparent 60%),
+      var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+  }
+  .cta-band h2{ font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 14px; }
+  .cta-band p{ color: var(--text-dim); margin-bottom: 32px; max-width: 520px; margin-inline:auto; }
+  .cta-row{ display:flex; gap:14px; justify-content:center; flex-wrap: wrap; }
+
+  .order-card{
+    max-width: 640px;
+    margin: 40px auto 0;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    text-align: left;
+  }
+  .order-step{
+    display:flex; gap: 16px; align-items:flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .order-step:last-child{ border-bottom: none; }
+  .order-step .num{
+    font-family: var(--mono); color: var(--lime);
+    font-weight:700; font-size: 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 6px; padding: 4px 10px;
+    flex-shrink:0;
+  }
+  .order-step .body strong{ display:block; margin-bottom: 4px; font-size: 0.98rem; }
+  .order-step .body span{ color: var(--text-dim); font-size: 0.88rem; }
+
+  /* FAQ */
+  details{
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    background: var(--panel);
+  }
+  summary{
+    cursor:pointer;
+    font-weight: 600;
+    display:flex; justify-content:space-between; align-items:center;
+    list-style:none;
+  }
+  summary::-webkit-details-marker{ display:none; }
+  summary::after{ content:"+"; font-family: var(--mono); color: var(--lime); font-size:1.2rem; }
+  details[open] summary::after{ content:"−"; }
+  details p{ color: var(--text-dim); margin-top: 12px; font-size: 0.92rem; }
+
+  /* FOOTER */
+  footer{
+    padding: 40px 6%;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap: wrap; gap: 16px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  footer a:hover{ color: var(--lime); }
+
+  @media (max-width: 860px){
+    .hero{ grid-template-columns: 1fr; padding-top: 60px; }
+    .price-row{ grid-template-columns: 1fr 1fr; }
+    .price-row .rate, .price-row .tag{ display:none; }
+    nav{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="dot"></span>VERTEX STUDIO</div>
+  <nav>
+    <a href="#precios">Precios</a>
+    <a href="#catalogo">Catálogo</a>
+    <a href="#pedido">Cómo pedir</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a href="https://discord.gg/HXmBPjH46S" class="btn btn-outline" style="padding:10px 18px;">Discord →</a>
+</header>
+
+<section class="hero" style="border-bottom:none; padding-bottom:0;">
+  <div>
+    <div class="eyebrow">precios reales · sin letras chiquitas</div>
+    <h1>Robux al precio<br>que <span>sí cuadra</span>.</h1>
+    <p class="sub">
+      Recarga Robux a precio justo, con descuento real en compras grandes.
+      Pide directo por Roblox o Discord — sin formularios eternos, sin esperas raras.
+    </p>
+    <div class="hero-ctas">
+      <a href="https://www.roblox.com/users/kracccea/profile" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Ir a mi perfil de Roblox</a>
+      <a href="https://discord.gg/HXmBPjH46S" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Unirme al Discord</a>
+    </div>
+    <p class="sub" style="margin-top:18px; font-family: var(--mono); font-size: 0.85rem;">
+      💬 <strong style="color: var(--lime);">Contacto directo con kracccea</strong> por Discord (ID: 1186009664308117635) — pregunta por <strong style="color: var(--gold);">descuentos exclusivos</strong> en tu pedido.
+    </p>
+  </div>
+
+  <div class="calc">
+    <div class="calc-head">
+      <h3>Calculadora de Robux</h3>
+      <span class="badge">EN VIVO</span>
+    </div>
+    <div class="calc-display">
+      <div class="robux-amount" id="robuxOut">1,000<span> R$</span></div>
+      <div class="price-amount" id="priceOut">$150<span> MXN</span></div>
+    </div>
+    <input type="range" id="robuxSlider" min="1000" max="50000" step="500" value="1000">
+    <div class="calc-scale">
+      <span>1,000</span>
+      <span>10,000</span>
+      <span>50,000</span>
+    </div>
+    <div class="calc-note" id="calcNote">Tarifa estándar: $150 MXN por cada 1,000 R$.</div>
+    <a href="https://discord.gg/HXmBPjH46S" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Pedir esta cantidad por Discord</a>
+  </div>
+</section>
+
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>ROBUX 1,000 → $150 MXN</span>
+    <span class="up">ROBUX +10,000 → $120 MXN /1k</span>
+    <span>ENTREGA: directo a tu cuenta Roblox</span>
+    <span>PAGO: transferencia / Oxxo / otros — se confirma por Discord</span>
+    <span>SOPORTE: Discord erickk11</span>
+    <span>ROBUX 1,000 → $150 MXN</span>
+    <span class="up">ROBUX +10,000 → $120 MXN /1k</span>
+    <span>ENTREGA: directo a tu cuenta Roblox</span>
+    <span>PAGO: transferencia / Oxxo / otros — se confirma por Discord</span>
+    <span>SOPORTE: Discord erickk11</span>
+  </div>
+</div>
+
+<section id="precios">
+  <div class="section-head">
+    <div class="eyebrow">tabla de precios</div>
+    <h2>Mientras más pides, menos pagas por unidad</h2>
+    <p>Precios actualizados. A partir de 10,000 Robux entra el precio mayorista de $120 MXN por cada 1,000.</p>
+  </div>
+
+  <div class="price-table">
+    <div class="price-row head">
+      <div>Cantidad</div>
+      <div>Tarifa</div>
+      <div>Total</div>
+      <div>—</div>
+    </div>
+    <div class="price-row">
+      <div class="qty">1,000 R$</div>
+      <div class="rate">$150 / 1k</div>
+      <div class="total">$150 MXN</div>
+      <div class="tag">Estándar</div>
+    </div>
+    <div class="price-row">
+      <div class="qty">5,000 R$</div>
+      <div class="rate">$150 / 1k</div>
+      <div class="total">$750 MXN</div>
+      <div class="tag">Estándar</div>
+    </div>
+    <div class="price-row">
+      <div class="qty">10,000 R$ <small>(umbral mayorista)</small></div>
+      <div class="rate">$120 / 1k</div>
+      <div class="total">$1,200 MXN</div>
+      <div class="tag best">Mejor precio</div>
+    </div>
+    <div class="price-row">
+      <div class="qty">20,000 R$</div>
+      <div class="rate">$120 / 1k</div>
+      <div class="total">$2,400 MXN</div>
+      <div class="tag best">Mejor precio</div>
+    </div>
+    <div class="price-row">
+      <div class="qty">50,000 R$</div>
+      <div class="rate">$120 / 1k</div>
+      <div class="total">$6,000 MXN</div>
+      <div class="tag best">Mejor precio</div>
+    </div>
+  </div>
+</section>
+
+<section id="catalogo">
+  <div class="section-head">
+    <div class="eyebrow">catálogo</div>
+    <h2>Qué puedes pedir</h2>
+    <p>Robux, gamepasses, y artículos de juegos populares. Pregunta disponibilidad y precio exacto por Discord.</p>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <span class="icon">💎</span>
+      <h4>Robux</h4>
+      <p>Recarga directa a tu cuenta. Pago mínimo de 1,000 R$.</p>
+      <div class="price">desde $150 MXN</div>
+    </div>
+    <div class="card">
+      <span class="icon">🎟️</span>
+      <h4>Gamepasses</h4>
+      <p>Compra de gamepasses específicos para tu juego favorito.</p>
+      <div class="price">precio según gamepass</div>
+    </div>
+    <div class="card">
+      <span class="icon">🧠</span>
+      <h4>Steal a Brainrot</h4>
+      <p>Items, mascotas y boosts dentro del juego.</p>
+      <div class="price">precio según item</div>
+    </div>
+    <div class="card">
+      <span class="icon">👤</span>
+      <h4>Cuentas Roblox</h4>
+      <p>Cuentas con inventario, límites o juegos premium.</p>
+      <div class="price">precio según cuenta</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band" id="pedido">
+  <h2>Cómo hacer tu pedido</h2>
+  <p>Todo se confirma por Discord o directo en mi perfil de Roblox. Tres pasos, sin vueltas.</p>
+
+  <div class="order-card">
+    <div class="order-step">
+      <div class="num">01</div>
+      <div class="body">
+        <strong>Calcula tu cantidad</strong>
+        <span>Usa la calculadora de arriba para ver cuánto pagas por la cantidad de Robux que quieres.</span>
+      </div>
+    </div>
+    <div class="order-step">
+      <div class="num">02</div>
+      <div class="body">
+        <strong>Contáctame</strong>
+        <span>Únete al Discord o mándame mensaje directo — usuario: <strong>kracccea</strong>. Contacto directo por Discord (ID: 1186009664308117635) tiene <strong style="color: var(--gold);">descuentos exclusivos</strong>.</span>
+      </div>
+    </div>
+    <div class="order-step">
+      <div class="num">03</div>
+      <div class="body">
+        <strong>Confirma y recibe</strong>
+        <span>Te confirmo el método de pago disponible y, una vez confirmado, recibes tus Robux directo en tu cuenta de Roblox.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-row" style="margin-top:32px;">
+    <a href="https://discord.gg/HXmBPjH46S" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Hacer pedido por Discord</a>
+    <a href="https://www.roblox.com/users/kracccea/profile" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Ver mi perfil de Roblox</a>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-head">
+    <div class="eyebrow">preguntas frecuentes</div>
+    <h2>Antes de pedir</h2>
+  </div>
+
+  <details open>
+    <summary>¿Cuál es el precio mínimo de pedido?</summary>
+    <p>El pedido mínimo es de 1,000 Robux a $150 MXN. A partir de 10,000 Robux el precio baja a $120 MXN por cada 1,000.</p>
+  </details>
+  <details>
+    <summary>¿Cómo recibo mis Robux?</summary>
+    <p>Directo en tu cuenta de Roblox, usando el método que acordemos por Discord (gamepass, grupo, o el método que esté disponible en ese momento).</p>
+  </details>
+  <details>
+    <summary>¿Cómo hago el pago?</summary>
+    <p>Se confirma por Discord según disponibilidad: transferencia, depósito o Oxxo. Te paso los datos directamente en el chat.</p>
+  </details>
+  <details>
+    <summary>¿Cuánto tarda la entrega?</summary>
+    <p>Una vez confirmado el pago, la entrega normalmente es el mismo día. En pedidos grandes puede tardar un poco más.</p>
+  </details>
+  <details>
+    <summary>¿Es seguro?</summary>
+    <p>Trabajo directo, sin intermediarios. Cualquier duda la resolvemos por Discord antes de cerrar el pedido.</p>
+  </details>
+</section>
+
+<footer>
+  <div>© 2026 VERTEX STUDIO · Todos los derechos reservados</div>
+  <div>
+    Discord: <a href="https://discord.gg/HXmBPjH46S" target="_blank" rel="noopener noreferrer">discord.gg/HXmBPjH46S</a>
+    &nbsp;·&nbsp;
+    Roblox: <a href="https://www.roblox.com/users/kracccea/profile" target="_blank" rel="noopener noreferrer">kracccea</a>
+    &nbsp;·&nbsp;
+    Descuentos: contacto directo Discord ID 1186009664308117635
+  </div>
+</footer>
+
+<script>
+  const slider = document.getElementById('robuxSlider');
+  const robuxOut = document.getElementById('robuxOut');
+  const priceOut = document.getElementById('priceOut');
+  const note = document.getElementById('calcNote');
+
+  function format(num){
+    return num.toLocaleString('en-US');
+  }
+
+  function update(){
+    const robux = parseInt(slider.value, 10);
+    let total;
+    if(robux >= 10000){
+      total = (robux / 1000) * 120;
+      note.innerHTML = '<span class="on">Tarifa mayorista activa:</span> $120 MXN por cada 1,000 R$ (10,000+).';
+    } else {
+      total = (robux / 1000) * 150;
+      const faltan = 10000 - robux;
+      note.innerHTML = 'Tarifa estándar: $150 MXN por cada 1,000 R$. Pide ' + format(faltan) + ' R$ más para activar el precio mayorista de $120/1k.';
+    }
+    robuxOut.innerHTML = format(robux) + '<span> R$</span>';
+    priceOut.innerHTML = '$' + format(Math.round(total)) + '<span> MXN</span>';
+  }
+
+  slider.addEventListener('input', update);
+  update();
+</script>
+
+</body>
+</html>
